@@ -21,7 +21,7 @@ product_info = product_script_data['productInfo']
 product_prices = product_script_data['prices'][0]
 
 product_info_serialize = {
-    'sku': product_info['sku'],
+    '_id': product_info['sku'],
     'name': product_info['name'],
     'image': product_info['imageUrl'],
     'brand': product_info['brand']['name'],
@@ -40,7 +40,14 @@ product_prices_serialize = {
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-uri =
+# fetch login from login.json
+with open('login.json') as f:
+    login = json.load(f)
+
+username = login['username']
+password = login['password']
+
+uri = "mongodb+srv://" + username + ":" + password + "@cluster0.oxoi2sh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -53,12 +60,24 @@ except Exception as e:
     print(e)
 
 db = client['PhongVu']
-collection = db["Product Data"]
+collection_product = db["Product Data"]
+collection_prices = db["Price Data"]
 
 # Insert the data into the MongoDB collection
 try:
-    result = collection.insert_one(product_info_serialize)
-    print(f"Document inserted with _id: {result.inserted_id}")
+    result = collection_product.update_one({'_id': product_info['sku']}, {'$set': product_info_serialize}, upsert=True)
+    if result.upserted_id is not None:
+        print(f"Document inserted with _id: {result.upserted_id}")
+    elif result.modified_count > 0:
+        print(f"Document with _id {product_info['sku']} updated.")
+    else:
+        print("No changes made to the document.")
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+try:
+    result = collection_prices.insert_one(product_prices_serialize)
+    print(f"Price inserted with _id: {result.inserted_id}")
 except Exception as e:
     print(f"An error occurred: {e}")
 
