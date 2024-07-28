@@ -6,8 +6,8 @@ import datetime
 
 # database constants
 DB_NAME = "PhongVu"
-COLLECTION_PRODUCT = "Product Data"
-COLLECTION_PRICES = "Price Data"
+COLLECTION_PRODUCT = "products"
+COLLECTION_PRICES = "prices"
 
 class ProductSpider(scrapy.Spider):
     name = "product"
