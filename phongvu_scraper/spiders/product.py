@@ -79,7 +79,8 @@ class ProductSpider(scrapy.Spider):
                     'name': product_info['name'],
                     'image': product_info['imageUrl'],
                     'brand': product_info['brand']['name'],
-                    'url': response.url
+                    'url': response.url,
+                    'demo' : True if product_info['name'][-14] == "Hàng trưng bày" else False,
                 }
 
                 # Serialize product prices
