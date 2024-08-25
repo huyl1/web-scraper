@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from unidecode import unidecode
 import scrapy
 import json
 import datetime
@@ -54,7 +55,15 @@ class ProductSpider(scrapy.Spider):
         db = self.client[DB_NAME]
         self.collection_product = db[COLLECTION_PRODUCT]
         self.collection_prices = db[COLLECTION_PRICES]
-
+    
+    def normalize(self, text):
+        #remove all accents, special characters
+        return unidecode(text).lower()
+    
+    def is_hang_trung_bay(self, text):
+        #check if normalized text contains "trung bay"
+        return "trung bay" in self.normalize(text)
+    
     def parse(self, response):
         # Increment the request count
         self.request_count += 1
@@ -77,10 +86,11 @@ class ProductSpider(scrapy.Spider):
                 product_info_serialize = {
                     '_id': product_info['sku'],
                     'name': product_info['name'],
+                    'name_normalized': self.normalize(product_info['name']),
                     'image': product_info['imageUrl'],
                     'brand': product_info['brand']['name'],
                     'url': response.url,
-                    'demo' : True if product_info['name'][-14] == "Hàng trưng bày" else False,
+                    'demo' : self.is_hang_trung_bay(self.normalize(product_info['name'])),
                 }
 
                 # Serialize product prices
