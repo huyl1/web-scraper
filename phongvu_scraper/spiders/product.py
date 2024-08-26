@@ -19,7 +19,7 @@ class ProductSpider(scrapy.Spider):
 
     custom_settings = {
         'DOWNLOAD_DELAY': 2,
-        'CONCURRENT_REQUESTS': 4,
+        'CONCURRENT_REQUESTS': 5,
         'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     }
 
@@ -91,6 +91,7 @@ class ProductSpider(scrapy.Spider):
                     'brand': product_info['brand']['name'],
                     'url': response.url,
                     'demo' : self.is_hang_trung_bay(self.normalize(product_info['name'])),
+                    'last_update': datetime.datetime.now().strftime('%Y-%m-%d')
                 }
 
                 # Serialize product prices
