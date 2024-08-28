@@ -91,7 +91,9 @@ class ProductSpider(scrapy.Spider):
                     'brand': product_info['brand']['name'],
                     'url': response.url,
                     'demo' : self.is_hang_trung_bay(self.normalize(product_info['name'])),
-                    'last_update': datetime.datetime.now().strftime('%Y-%m-%d')
+                    'last_update': datetime.datetime.now().strftime('%Y-%m-%d'),
+                    'last_price': int(product_prices['latestPrice']),
+                    'last_discount': float(product_prices['discountPercent'])
                 }
 
                 # Serialize product prices
